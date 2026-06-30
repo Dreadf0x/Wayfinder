@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Canvas Module Progress Tracker",
+  "version": "0.2.0",
+  "description": "Adds a keyword-based visual module progress tracker to Canvas module pages.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://ubtech.instructure.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://ubtech.instructure.com/courses/*/modules*"
+      ],
+      "js": [
+        "src/content.js"
+      ],
+      "css": [
+        "css/tracker.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
