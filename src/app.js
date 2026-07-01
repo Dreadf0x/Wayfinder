@@ -1,5 +1,6 @@
 import { canvasFetch, canvasFetchAll } from "./api/canvas.js";
 import { detectRoleFromPermissions } from "./api/roles.js";
+import { loadRules, saveRules, loadUiState, saveUiState } from "./storage/rules.js";
 export function initializeApp() {
   "use strict";
 
@@ -42,47 +43,6 @@ export function initializeApp() {
     document.getElementById(TAB_ID)?.remove();
   }
 
-  function storageGet(key) {
-    return new Promise((resolve) => {
-      chrome.storage.local.get([key], (result) => resolve(result[key]));
-    });
-  }
-
-  function storageSet(obj) {
-    return new Promise((resolve) => {
-      chrome.storage.local.set(obj, resolve);
-    });
-  }
-
-  function getRulesStorageKey(courseId) {
-    return `cpt_rules_course_${courseId}`;
-  }
-
-  function getUiStorageKey(courseId) {
-    return `cpt_ui_course_${courseId}`;
-  }
-
-  async function loadRules(courseId) {
-    return (await storageGet(getRulesStorageKey(courseId))) || {};
-  }
-
-  async function saveRules(courseId, rules) {
-    await storageSet({ [getRulesStorageKey(courseId)]: rules });
-  }
-
-  async function loadUiState(courseId) {
-    return (await storageGet(getUiStorageKey(courseId))) || {};
-  }
-
-  async function saveUiState(courseId) {
-    await storageSet({
-      [getUiStorageKey(courseId)]: {
-        collapsed: appState.collapsed
-      }
-    });
-  }
-
-  
 
   function isRequiredTitle(title) {
     const lowered = cleanText(title).toLowerCase();
@@ -164,7 +124,7 @@ export function initializeApp() {
     tab.title = "Open Module Progress";
     tab.addEventListener("click", async () => {
       appState.collapsed = false;
-      await saveUiState(appState.courseId);
+      await saveUiState(appState.courseId, appState.collapsed);
       await reloadDataAndRender();
     });
     document.body.appendChild(tab);
