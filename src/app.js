@@ -134,7 +134,7 @@ export function initializeApp() {
     document.getElementById("cpt-refresh")?.addEventListener("click", init);
     document.getElementById("cpt-collapse")?.addEventListener("click", async () => {
       appState.collapsed = true;
-      await saveUiState(appState.courseId);
+      await saveUiState(appState.courseId, appState.collapsed);
       removeExistingUI();
       createCollapsedTab();
     });
@@ -192,9 +192,12 @@ export function initializeApp() {
     const [assignments, submissions] = await Promise.all([
       assignmentIds.length
         ? Promise.all(assignmentIds.map((id) =>
-            canvasFetch(`/api/v1/courses/${courseId}/assignments/${id}`).catch((error) => ({
-              id,
-              _cpt_error: error.message
+            canvasFetch(`/api/v1/courses/${courseId}/assignments/${id}/submissions/self`).catch(() => ({
+              assignment_id: id,
+              workflow_state: "unavailable",
+              score: null,
+              submitted_at: null,
+              _cpt_unavailable: true
             }))
           ))
         : Promise.resolve([]),
@@ -225,6 +228,12 @@ export function initializeApp() {
   function analyzeItem(item, data) {
     const title = cleanText(item.title || "Untitled item");
     const assignmentId = getAssignmentIdFromModuleItem(item);
+    console.log("CPT Item", {
+    title: item.title,
+    type: item.type,
+    assignmentId,
+    item
+});
 
     if (!assignmentId) {
       return {
@@ -253,17 +262,17 @@ export function initializeApp() {
       };
     }
 
-    if (!submission || submission._cpt_error) {
-      return {
-        id: item.id,
-        title,
-        type: item.type || "Unknown",
-        status: "error",
-        complete: false,
-        percent: null,
-        detail: submission?._cpt_error || "Submission data unavailable."
-      };
-    }
+    if (!submission || submission._cpt_error || submission._cpt_unavailable) {
+  return {
+    id: item.id,
+    title,
+    type: item.type || "Unknown",
+    status: "waiting",
+    complete: false,
+    percent: null,
+    detail: "Submission data unavailable for this view."
+  };
+}
 
     const workflow = String(submission.workflow_state || "").toLowerCase();
     const submittedAt = submission.submitted_at;
@@ -363,9 +372,7 @@ export function initializeApp() {
     const customRuleCount = analyzedModules.filter(m => m.ruleMode === "custom").length;
 
     const moduleRows = analyzedModules.map((module, index) => renderModule(module, index, isInstructor)).join("");
-    const settingsPanel = isInstructor && appState.showSettingsForModuleId
-      ? renderSettingsPanel(appState.showSettingsForModuleId, data)
-      : "";
+  
 
     const debugPanel = isInstructor && DEBUG_MODE ? `
       <details class="cpt-debug">
@@ -416,7 +423,7 @@ export function initializeApp() {
         ${isInstructor ? `<span>Custom Rules: ${customRuleCount}</span>` : ""}
       </div>
 
-      ${settingsPanel}
+      
 
       <div class="cpt-body">${moduleRows}</div>
 
@@ -431,6 +438,10 @@ export function initializeApp() {
   }
 
   function renderModule(module, index, isInstructor) {
+    const settingsPanel =
+  isInstructor && String(appState.showSettingsForModuleId) === String(module.id)
+    ? renderSettingsPanel(module.id, appState.data)
+    : "";
     const itemList = module.items.length
       ? module.items.map(renderItem).join("")
       : `<li class="cpt-item-muted">No required items found.</li>`;
@@ -456,6 +467,7 @@ export function initializeApp() {
           </div>
           <div class="cpt-status">${module.complete}/${module.total} required passed</div>
         </summary>
+        ${settingsPanel}
         <ul class="cpt-item-list">${itemList}</ul>
       </details>
     `;
