@@ -287,7 +287,11 @@ export function initializeApp() {
       };
     }
 
-    const percent = Math.round((score / pointsPossible) * 100);
+
+    function calculateGradePercent(score, pointsPossible) {
+      return Math.round((score / pointsPossible) * 100);
+   }
+    const percent = calculateGradePercent(score, pointsPossible);
     const complete = percent >= PASSING_PERCENT;
 
     return {
