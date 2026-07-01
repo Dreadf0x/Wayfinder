@@ -201,12 +201,7 @@ export function initializeApp() {
   function analyzeItem(item, data) {
     const title = cleanText(item.title || "Untitled item");
     const assignmentId = getAssignmentIdFromModuleItem(item);
-    console.log("CPT Item", {
-    title: item.title,
-    type: item.type,
-    assignmentId,
-    item
-});
+    
 
     if (!assignmentId) {
       return {
