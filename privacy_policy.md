@@ -108,10 +108,6 @@ Wayfinder may be distributed as open-source software.
 
 Source code and project information can be found at the official GitHub repository.
 
-One suggestion
-
-Since you're publishing this, I'd also add a short disclaimer at the bottom:
-
 Wayfinder is an independent project and is not affiliated with, endorsed by, or sponsored by Instructure, Inc. or Canvas LMS. Canvas is a trademark of Instructure, Inc.
 
 That single sentence helps avoid any confusion about the relationship between your extension and Canvas, and it's a common practice for third-party extensions.
