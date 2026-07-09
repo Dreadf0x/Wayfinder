@@ -1,3 +1,5 @@
+import { renderRadarProgressBar } from "./radarProgressBar.js";
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -80,8 +82,8 @@ export function renderStudentRadarTable({
         return `
           <tr>
             <td>${escapeHtml(student.name || student.sortable_name || "Unknown Student")}</td>
-            <td>—</td>
-            <td>—</td>
+            <td>${renderRadarProgressBar(student.submittedPercent)}</td>
+            <td>${renderRadarProgressBar(student.gradedPercent)}</td>
             <td>
               ${(() => {
                 const activity = getActivityStatus(student);

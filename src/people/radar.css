@@ -204,3 +204,35 @@ body #cpt-progress-tracker:has(.cpt-student-radar) {
   background: var(--cpt-panel-secondary) !important;
   outline: none !important;
 }
+
+.cpt-radar-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cpt-radar-progress-track {
+  flex: 1;
+  min-width: 70px;
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cpt-text-muted) 18%, transparent);
+  overflow: hidden;
+}
+
+.cpt-radar-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--cpt-accent);
+}
+
+.cpt-radar-progress-label {
+  min-width: 34px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--cpt-text-muted);
+}
+
+.cpt-radar-empty {
+  color: var(--cpt-text-muted);
+}
