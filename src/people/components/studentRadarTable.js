@@ -9,38 +9,49 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function formatLastActivity(student) {
+function getDaysSinceLastActivity(student) {
   const enrollment = student.enrollments?.[0];
   const lastActivity = enrollment?.last_activity_at;
 
-  if (!lastActivity) return "No activity";
+  if (!lastActivity) {
+    return Number.POSITIVE_INFINITY;
+  }
 
-  const lastDate = new Date(lastActivity);
-  const now = new Date();
+  const lastActivityTime = new Date(lastActivity).getTime();
 
-  const diffMs = now - lastDate;
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (Number.isNaN(lastActivityTime)) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  const differenceMs = Date.now() - lastActivityTime;
+
+  return Math.max(
+    0,
+    Math.floor(differenceMs / (1000 * 60 * 60 * 24))
+  );
+}
+
+function formatLastActivity(student) {
+  const diffDays = getDaysSinceLastActivity(student);
+
+  if (!Number.isFinite(diffDays)) {
+    return "No activity";
+  }
 
   if (diffDays <= 0) return "Today";
   if (diffDays === 1) return "1 day";
   return `${diffDays} days`;
 }
 
-
 function getActivityStatus(student) {
-  const enrollment = student.enrollments?.[0];
-  const lastActivity = enrollment?.last_activity_at;
+  const diffDays = getDaysSinceLastActivity(student);
 
-  if (!lastActivity) {
+  if (!Number.isFinite(diffDays) || diffDays >= 8) {
     return {
       icon: "⛔",
       className: "cpt-activity-inactive"
     };
   }
-
-  const diffDays = Math.floor(
-    (new Date() - new Date(lastActivity)) / (1000 * 60 * 60 * 24)
-  );
 
   if (diffDays <= 3) {
     return {
@@ -49,16 +60,9 @@ function getActivityStatus(student) {
     };
   }
 
-  if (diffDays <= 7) {
-    return {
-      icon: "⚠",
-      className: "cpt-activity-watch"
-    };
-  }
-
   return {
-    icon: "⛔",
-    className: "cpt-activity-inactive"
+    icon: "⚠",
+    className: "cpt-activity-watch"
   };
 }
 
@@ -73,35 +77,61 @@ export function renderStudentRadarTable({
   if (loading) {
     rows = `<tr><td colspan="5">Loading students...</td></tr>`;
   } else if (error) {
-    rows = `<tr><td colspan="5">Could not load students: ${escapeHtml(error)}</td></tr>`;
+    rows = `
+      <tr>
+        <td colspan="5">
+          Could not load students: ${escapeHtml(error)}
+        </td>
+      </tr>
+    `;
   } else if (!students.length) {
     rows = `<tr><td colspan="5">No students found.</td></tr>`;
   } else {
     rows = students
       .map((student) => {
-        return `
-          <tr>
-            <td>${escapeHtml(student.name || student.sortable_name || "Unknown Student")}</td>
-            <td>${renderRadarProgressBar(student.submittedPercent)}</td>
-            <td>${renderRadarProgressBar(student.gradedPercent)}</td>
-            <td>
-              ${(() => {
-                const activity = getActivityStatus(student);
+        const activity = getActivityStatus(student);
+        const inactiveDays = getDaysSinceLastActivity(student);
 
-                return `
-                  <span class="cpt-activity-badge ${activity.className}">
-                    <span class="cpt-activity-icon">${activity.icon}</span>
-                    ${escapeHtml(formatLastActivity(student))}
-                  </span>
-                `;
-              })()}
+        return `
+          <tr
+            data-radar-student-row
+            data-inactive-days="${inactiveDays}"
+            data-submitted-percent="${student.submittedPercent ?? ""}"
+            data-graded-percent="${student.gradedPercent ?? ""}"
+          >
+            <td>
+              ${escapeHtml(
+                student.name ||
+                student.sortable_name ||
+                "Unknown Student"
+              )}
             </td>
+
+            <td>
+              ${renderRadarProgressBar(student.submittedPercent)}
+            </td>
+
+            <td>
+              ${renderRadarProgressBar(student.gradedPercent)}
+            </td>
+
+            <td>
+              <span class="cpt-activity-badge ${activity.className}">
+                <span class="cpt-activity-icon">
+                  ${activity.icon}
+                </span>
+                ${escapeHtml(formatLastActivity(student))}
+              </span>
+            </td>
+
             <td>
               <input
                 type="date"
                 class="cpt-end-date"
-                data-student-id="${student.id}"
-                value="${escapeHtml(endDates[String(student.id)] || "")}"
+                data-student-id="${escapeHtml(student.id)}"
+                value="${escapeHtml(
+                  endDates[String(student.id)] || ""
+                )}"
               >
             </td>
           </tr>
@@ -115,6 +145,7 @@ export function renderStudentRadarTable({
       <div class="cpt-module-topline">
         <span class="cpt-module-title">Students</span>
       </div>
+
       <div class="cpt-radar-table-wrap">
         <table class="cpt-radar-table">
           <thead>
@@ -126,6 +157,7 @@ export function renderStudentRadarTable({
               <th>End Date</th>
             </tr>
           </thead>
+
           <tbody>
             ${rows}
           </tbody>
