@@ -8,7 +8,12 @@ import { renderStudentRadar } from "./peopleRenderer.js";
 
 
 
-import { loadUiState } from "../storage/rules.js";
+import {
+  loadUiState,
+  saveUiState
+} from "../storage/rules.js";
+
+
 import { applyTheme, getTheme } from "../themes/themes.js";
 
 import { initializeRadarTooltips } from "./radarTooltips.js";
@@ -23,6 +28,16 @@ import {
   saveRequiredItemIds,
   saveRadarUiState
 } from "./peopleStorage.js";
+
+import {
+  createCourseConfig,
+  downloadCourseConfig
+} from "../shared/courseConfig.js";
+
+
+import {
+  publishCourseConfigToCanvas
+} from "../shared/canvasCourseConfig.js";
 
 function loadRadarStyles() {
   if (document.getElementById("wayfinder-radar-css")) {
@@ -429,7 +444,8 @@ function bindRequiredItemsPanel({
         ".cpt-radar-required-checkbox:checked"
       )
     ).map(
-      (checkbox) => String(checkbox.value)
+      (checkbox) =>
+        String(checkbox.value)
     );
 
     await saveRequiredItemIds(
@@ -437,15 +453,60 @@ function bindRequiredItemsPanel({
       checkedIds
     );
 
+    const checkedIdSet =
+      new Set(checkedIds);
+
+    const selectedAssignments =
+      assignments.filter(
+        (assignment) =>
+          checkedIdSet.has(
+            String(assignment.id)
+          )
+      );
+
+    const uiState =
+      await loadUiState(courseId);
+
+    const config =
+      createCourseConfig({
+        courseId,
+
+        requiredItems:
+          selectedAssignments,
+
+        settings: {
+          passingPercent: 80,
+
+          theme:
+            uiState.theme ||
+            "ubtech"
+        }
+      });
+
+    /*
+ * Keep the local download during this testing phase.
+ */
+downloadCourseConfig(config);
+
+    /*
+    * Publish the same configuration into the current
+    * Canvas course's Files area.
+    */
+    await publishCourseConfigToCanvas({
+      courseId,
+      config
+    });
+
+    console.info(
+      "Wayfinder course configuration generated and uploaded:",
+      config
+    );
+
     panel.remove();
+
     await initializePeopleView();
   }
 
-  /*
-   * First click opens the popup.
-   * Clicking the header button again saves the current
-   * selection, closes the popup, and refreshes Radar.
-   */
   openButton.addEventListener(
     "click",
     async () => {
@@ -469,9 +530,6 @@ function bindRequiredItemsPanel({
     }
   );
 
-  /*
-   * The X closes without saving.
-   */
   closeButton?.addEventListener(
     "click",
     () => {
@@ -504,14 +562,67 @@ function bindRequiredItemsPanel({
 
       try {
         const defaultIds =
-          getDefaultRequiredItemIds(assignments);
+          getDefaultRequiredItemIds(
+            assignments
+          );
 
         await saveRequiredItemIds(
           courseId,
           defaultIds
         );
 
+        const defaultIdSet =
+          new Set(
+            defaultIds.map(String)
+          );
+
+        const defaultAssignments =
+          assignments.filter(
+            (assignment) =>
+              defaultIdSet.has(
+                String(assignment.id)
+              )
+          );
+
+        const uiState =
+          await loadUiState(courseId);
+
+        const config =
+          createCourseConfig({
+            courseId,
+
+            requiredItems:
+              defaultAssignments,
+
+            settings: {
+              passingPercent: 80,
+
+              theme:
+                uiState.theme ||
+                "ubtech"
+            }
+          });
+
+            /*
+      * Keep the local download during this testing phase.
+      */
+      downloadCourseConfig(config);
+
+      /*
+      * Upload the reset/default configuration to Canvas.
+      */
+      await publishCourseConfigToCanvas({
+        courseId,
+        config
+      });
+
+      console.info(
+        "Wayfinder default course configuration generated and uploaded:",
+        config
+      );
+
         panel.remove();
+
         await initializePeopleView();
       } catch (error) {
         console.error(
