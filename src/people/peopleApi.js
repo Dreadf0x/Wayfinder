@@ -130,21 +130,11 @@ export async function getCourseStudents(
 export async function getRadarAssignments(
   courseId
 ) {
-  /*
-   * Load both:
-   *
-   * 1. Module items, which tell Wayfinder where each
-   *    assignment appears in the course.
-   *
-   * 2. The authoritative course assignment list, which
-   *    confirms that the assignment still exists.
-   */
   const [modules, courseAssignments] =
     await Promise.all([
       canvasFetchAll(
         `/api/v1/courses/${courseId}` +
-          `/modules?include[]=items` +
-          `&per_page=100`
+          `/modules?include[]=items&per_page=100`
       ),
 
       canvasFetchAll(
@@ -160,11 +150,17 @@ export async function getRadarAssignments(
     ])
   );
 
-  const radarAssignmentsById = new Map();
+  const normalizeTitle = (value) =>
+    String(value || "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+
+  const selectableItems = [];
 
   for (const module of modules) {
     /*
-     * Do not include assignments from unpublished modules.
+     * Do not expose items from unpublished modules.
      */
     if (module.published === false) {
       continue;
@@ -172,76 +168,127 @@ export async function getRadarAssignments(
 
     for (const item of module.items || []) {
       /*
-       * Keep the existing Wayfinder behavior of tracking
-       * Canvas module items represented as assignments.
+       * Do not expose unpublished module items.
        */
-      if (item.type !== "Assignment") {
+      if (item.published === false) {
         continue;
       }
 
-      const assignmentId =
-        String(item.content_id || "");
-
-      if (!assignmentId) {
-        continue;
-      }
-
-      const assignment =
-        validAssignmentsById.get(
-          assignmentId
-        );
+      const type =
+        String(item.type || "")
+          .trim()
+          .toLowerCase();
 
       /*
-       * Some older or migrated courses contain module
-       * items that point to deleted or invalid assignments.
+       * Wayfinder should not offer organizational
+       * text headers as required items.
+       */
+      if (
+        type === "subheader" ||
+        type === "text_header" ||
+        type === "contextmoduleheader"
+      ) {
+        continue;
+      }
+
+      /*
+       * Exclude ordinary external web links such as
+       * YouTube videos and reference websites.
        *
-       * These must be ignored or Canvas will reject the
-       * entire bulk submission request.
+       * ExternalTool is NOT excluded because LTI
+       * assignments may use that Canvas item type.
+       */
+      if (
+        type === "externalurl" ||
+        type === "external_url"
+      ) {
+        continue;
+      }
+
+      let assignment = null;
+
+      /*
+       * Best case: Canvas directly exposes the
+       * backing assignment ID.
+       */
+      if (item.assignment_id) {
+        assignment =
+          validAssignmentsById.get(
+            String(item.assignment_id)
+          ) || null;
+      }
+
+      /*
+       * Assignment and some LTI module items expose
+       * the real assignment through content_id.
+       */
+      if (!assignment && item.content_id) {
+        assignment =
+          validAssignmentsById.get(
+            String(item.content_id)
+          ) || null;
+      }
+
+      /*
+       * Migrated courses, quizzes, discussions and
+       * some LTI tools may use a different content ID.
+       * Try an exact title match against Canvas's
+       * authoritative assignment list.
        */
       if (!assignment) {
-        console.warn(
-          "Wayfinder ignored an orphaned module item:",
-          {
-            courseId,
-            moduleId: module.id,
-            moduleName: module.name,
-            moduleItemId: item.id,
-            moduleItemTitle: item.title,
-            assignmentId
-          }
-        );
+        const itemTitle =
+          normalizeTitle(item.title);
 
-        continue;
+        if (itemTitle) {
+          assignment =
+            courseAssignments.find(
+              (candidate) =>
+                normalizeTitle(
+                  candidate.name
+                ) === itemTitle
+            ) || null;
+        }
       }
 
       /*
-       * Do not include unpublished assignments in student
-       * progress calculations.
+       * The module-item ID identifies exactly what
+       * the instructor selected.
+       *
+       * The assignment ID is optional and is used
+       * later for submission/grade tracking.
        */
-      if (assignment.published === false) {
-        continue;
-      }
+      selectableItems.push({
+        id:
+          `module:${item.id}`,
 
-      radarAssignmentsById.set(
-        assignmentId,
-        {
-          id: assignment.id,
-          name:
-            assignment.name ||
-            item.title ||
-            "Untitled assignment",
-          moduleId: module.id,
-          moduleName:
-            module.name ||
-            "Unnamed module"
-        }
-      );
+        moduleItemId:
+          String(item.id),
+
+        assignmentId:
+          assignment?.id
+            ? String(assignment.id)
+            : null,
+
+        name:
+          item.title ||
+          assignment?.name ||
+          "Untitled item",
+
+        type:
+          item.type ||
+          "Unknown",
+
+        moduleId:
+          String(module.id),
+
+        moduleName:
+          module.name ||
+          "Unnamed module"
+      });
     }
   }
 
-  return Array.from(
-    radarAssignmentsById.values()
-  );
+  return selectableItems;
 }
 
 export async function getSubmissionsForAssignment(
@@ -348,14 +395,17 @@ export async function getRadarSubmissions(
   }
 
   const uniqueAssignmentIds = Array.from(
-    new Set(
-      assignmentIds
-        .filter(Boolean)
-        .map((assignmentId) =>
-          String(assignmentId)
-        )
-    )
-  );
+  new Set(
+    assignmentIds
+      .filter(Boolean)
+      .map((assignmentId) =>
+        String(assignmentId)
+      )
+      .filter((assignmentId) =>
+        /^\d+$/.test(assignmentId)
+      )
+  )
+);
 
   if (!uniqueAssignmentIds.length) {
     return [];

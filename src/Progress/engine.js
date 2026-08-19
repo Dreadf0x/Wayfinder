@@ -23,18 +23,24 @@ export function isTextHeaderItem(item) {
 }
 
 export function getAssignmentIdFromModuleItem(item) {
-  if (item.assignment_id) {
-    return Number(item.assignment_id);
+  const assignmentId = Number(item.assignment_id);
+
+  if (Number.isFinite(assignmentId) && assignmentId > 0) {
+    return assignmentId;
   }
 
+  const contentId = Number(item.content_id);
+  const type = String(item.type || "").toLowerCase();
+
   if (
+    Number.isFinite(contentId) &&
+    contentId > 0 &&
     (
-      item.type === "Assignment" ||
-      item.type === "ExternalTool"
-    ) &&
-    item.content_id
+      type === "assignment" ||
+      type === "externaltool"
+    )
   ) {
-    return Number(item.content_id);
+    return contentId;
   }
 
   return null;
@@ -63,12 +69,18 @@ export function getRequiredItemsForModule(
     );
 
     return moduleItems.filter((moduleItem) => {
-      const assignmentId =
-        getAssignmentIdFromModuleItem(moduleItem);
+      const assignmentId = getAssignmentIdFromModuleItem(moduleItem);
+      const contentId = Number(moduleItem.content_id);
 
       return (
-        assignmentId !== null &&
-        selectedAssignmentIds.has(Number(assignmentId))
+        (
+          assignmentId !== null &&
+          selectedAssignmentIds.has(Number(assignmentId))
+        ) ||
+        (
+          Number.isFinite(contentId) &&
+          selectedAssignmentIds.has(contentId)
+        )
       );
     });
   }
@@ -289,14 +301,40 @@ export function analyzeModules(
         data.courseConfig
       );
 
-    const analyzedItems = requiredItems.map(
-      (item) =>
-        analyzeItem(
-          item,
-          data,
-          passingPercent
-        )
-    );
+    const seenAssignmentIds = new Set();
+
+const uniqueRequiredItems =
+  requiredItems.filter((item) => {
+    const assignmentId =
+      getAssignmentIdFromModuleItem(item);
+
+    /*
+     * Keep informational/non-assignment items.
+     * Only deduplicate items that resolve to the
+     * same Canvas assignment.
+     */
+    if (!assignmentId) {
+      return true;
+    }
+
+    const key = String(assignmentId);
+
+    if (seenAssignmentIds.has(key)) {
+      return false;
+    }
+
+    seenAssignmentIds.add(key);
+    return true;
+  });
+
+const analyzedItems = uniqueRequiredItems.map(
+  (item) =>
+    analyzeItem(
+      item,
+      data,
+      passingPercent
+    )
+);
 
     const progressItems =
       analyzedItems.filter(

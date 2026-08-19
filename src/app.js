@@ -267,123 +267,151 @@ export function initializeApp() {
   }
 
   async function resolveModuleItemAssignmentId(
-    courseId,
-    moduleItem
+  courseId,
+  moduleItem
+) {
+  /*
+   * Best case: Canvas directly exposes the real
+   * backing assignment ID.
+   */
+  const directAssignmentId =
+    Number(moduleItem.assignment_id);
+
+  if (
+    Number.isFinite(directAssignmentId) &&
+    directAssignmentId > 0
   ) {
-    if (moduleItem.assignment_id) {
-      return Number(moduleItem.assignment_id);
-    }
-
-    const type = String(
-      moduleItem.type || ""
-    ).toLowerCase();
-
-    if (type === "quiz") {
-      /*
-       * Canvas does not always include content_id on module quiz
-       * items. In those cases the quiz ID is still present in the
-       * API URL or HTML URL, so check every available source.
-       */
-      const quizUrl = String(
-        moduleItem.url ||
-        moduleItem.html_url ||
-        moduleItem.external_url ||
-        ""
-      );
-
-      const quizUrlMatch =
-        quizUrl.match(/\/quizzes\/(\d+)/i);
-
-      const quizId = Number(
-        moduleItem.content_id ||
-        quizUrlMatch?.[1]
-      );
-
-      if (Number.isFinite(quizId) && quizId > 0) {
-        const quiz = await canvasFetch(
-          `/api/v1/courses/${courseId}/quizzes/${quizId}`
-        ).catch((error) => {
-          console.warn(
-            "Wayfinder could not load the Canvas quiz while resolving its assignment ID:",
-            moduleItem,
-            error
-          );
-
-          return null;
-        });
-
-        const quizAssignmentId = Number(
-          quiz?.assignment_id
-        );
-
-        if (
-          Number.isFinite(quizAssignmentId) &&
-          quizAssignmentId > 0
-        ) {
-          return quizAssignmentId;
-        }
-      }
-
-      /*
-       * Final compatibility fallback: Classic Quizzes are backed by
-       * assignments. Search Canvas assignments by the exact quiz title
-       * when the module item does not expose a usable quiz ID.
-       */
-      const title = cleanText(
-        moduleItem.title
-      );
-
-      if (title) {
-        const matches = await canvasFetchAll(
-          `/api/v1/courses/${courseId}/assignments?per_page=100&search_term=${encodeURIComponent(title)}`
-        ).catch((error) => {
-          console.warn(
-            "Wayfinder could not search assignments for the Canvas quiz:",
-            moduleItem,
-            error
-          );
-
-          return [];
-        });
-
-        const exactMatch = matches.find(
-          (assignment) =>
-            cleanText(assignment.name)
-              .toLowerCase() ===
-            title.toLowerCase()
-        );
-
-        const matchedAssignmentId = Number(
-          exactMatch?.id
-        );
-
-        if (
-          Number.isFinite(matchedAssignmentId) &&
-          matchedAssignmentId > 0
-        ) {
-          return matchedAssignmentId;
-        }
-      }
-
-      console.warn(
-        "Wayfinder could not resolve a Canvas quiz to its backing assignment:",
-        moduleItem
-      );
-
-      return null;
-    }
-
-    const assignmentId =
-      getAssignmentIdFromModuleItem(
-        moduleItem
-      );
-
-    return Number.isFinite(
-      Number(assignmentId)
-    )
-      ? Number(assignmentId)
-      : null;
+    return directAssignmentId;
   }
+
+  const type = String(
+    moduleItem.type || ""
+  ).toLowerCase();
+
+  /*
+   * Classic Quiz module items need special handling because
+   * their content_id is normally the quiz ID, not the
+   * backing assignment ID.
+   */
+  if (type === "quiz") {
+    const quizUrl = String(
+      moduleItem.url ||
+      moduleItem.html_url ||
+      moduleItem.external_url ||
+      ""
+    );
+
+    const quizUrlMatch =
+      quizUrl.match(/\/quizzes\/(\d+)/i);
+
+    const quizId = Number(
+      moduleItem.content_id ||
+      quizUrlMatch?.[1]
+    );
+
+    if (
+      Number.isFinite(quizId) &&
+      quizId > 0
+    ) {
+      const quiz = await canvasFetch(
+        `/api/v1/courses/${courseId}/quizzes/${quizId}`
+      ).catch(() => null);
+
+      const quizAssignmentId =
+        Number(quiz?.assignment_id);
+
+      if (
+        Number.isFinite(quizAssignmentId) &&
+        quizAssignmentId > 0
+      ) {
+        return quizAssignmentId;
+      }
+    }
+  }
+
+  /*
+   * Try Wayfinder's normal module-item resolver.
+   */
+  const normalAssignmentId =
+    getAssignmentIdFromModuleItem(
+      moduleItem
+    );
+
+  if (
+    Number.isFinite(Number(normalAssignmentId)) &&
+    Number(normalAssignmentId) > 0
+  ) {
+    /*
+     * Verify that Canvas actually recognizes this as
+     * an assignment before returning it.
+     */
+    const assignment = await canvasFetch(
+      `/api/v1/courses/${courseId}/assignments/${Number(normalAssignmentId)}`
+    ).catch(() => null);
+
+    if (assignment?.id) {
+      return Number(assignment.id);
+    }
+  }
+
+  /*
+   * Final fallback for migrated, LTI, or otherwise unusual
+   * Canvas module items:
+   *
+   * search the authoritative Canvas assignment list by the
+   * item's exact visible title.
+   */
+  const title =
+    cleanText(moduleItem.title);
+
+  if (title) {
+    const matches = await canvasFetchAll(
+      `/api/v1/courses/${courseId}/assignments?per_page=100&search_term=${encodeURIComponent(title)}`
+    ).catch((error) => {
+      console.warn(
+        "Wayfinder could not search Canvas assignments while resolving:",
+        moduleItem,
+        error
+      );
+
+      return [];
+    });
+
+    const exactMatch =
+      matches.find(
+        (assignment) =>
+          cleanText(assignment.name)
+            .toLowerCase() ===
+          title.toLowerCase()
+      );
+
+    const matchedAssignmentId =
+      Number(exactMatch?.id);
+
+    if (
+      Number.isFinite(matchedAssignmentId) &&
+      matchedAssignmentId > 0
+    ) {
+      console.info(
+        "Wayfinder resolved assignment by title:",
+        {
+          title,
+          assignmentId:
+            matchedAssignmentId
+        }
+      );
+
+      return matchedAssignmentId;
+    }
+  }
+
+  console.warn(
+    "Wayfinder could not resolve module item to a Canvas assignment:",
+    moduleItem
+  );
+
+  return null;
+}
 
   async function resolveConfiguredItems(
     courseId,
