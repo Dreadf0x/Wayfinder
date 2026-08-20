@@ -1,115 +1,189 @@
-Wayfinder Privacy Policy
+# Wayfinder Privacy Policy
 
-Last Updated: July 4, 2026
+**Last Updated: August 20, 2026**
 
-Introduction
+## Introduction
 
-Wayfinder is a Chrome extension designed to enhance the Canvas Learning Management System (LMS) by providing students with a visual course progress tracker and giving instructors tools to customize required course items.
+Wayfinder is a Chrome extension designed to enhance the Canvas Learning Management System (LMS) with course progress tracking, student planning tools, and instructor progress-management features.
 
-This Privacy Policy explains what information Wayfinder collects, how it is used, and how it is protected.
+This Privacy Policy explains what information Wayfinder accesses, how that information is used and stored, and the steps taken to minimize the collection and exposure of user and student information.
 
-Information We Collect
-Local Browser Data
+## Our Privacy Approach
 
-Wayfinder stores a limited amount of information locally within your web browser using Chrome's Storage API. This may include:
+Wayfinder is designed around a **local-first architecture**.
 
-Selected application theme
-User interface preferences
-Instructor-defined module requirements (current versions)
-Other extension settings necessary for normal operation
+Wayfinder does not operate an external application server or student database. Canvas information used by the extension is retrieved directly between the user's browser and their institution's Canvas LMS.
 
-This information remains on your device and is used solely to improve your experience with the extension.
+Wayfinder does not sell user information and does not use advertising or third-party analytics or tracking services.
 
-Canvas Course Information
+## Information Accessed From Canvas
 
-Wayfinder reads information that is already displayed within Canvas pages in order to provide its functionality, including:
+To provide its functionality, Wayfinder may access information available to the currently authenticated Canvas user, including:
 
-Course names
-Module names
-Module items
-Completion status
-Assignment and quiz titles
+* Course names and identifiers
+* Modules and module items
+* Assignment and quiz information
+* Completion and submission status
+* Grading status and scores when required for progress calculations
+* Student names and Canvas user identifiers
+* Enrollment and course activity information
+* Canvas permissions and role information
 
-Wayfinder does not modify Canvas data.
+The exact information available to Wayfinder depends on the user's existing Canvas account and permissions.
 
-Information We Do Not Collect
+Wayfinder does not provide users with access to Canvas information they are not already authorized to access.
 
-Wayfinder does not collect, store, or sell:
+## Student Radar
 
-Student grades
-Assignment submissions
-Quiz responses
-Personally identifiable student information
-Passwords
-Authentication tokens
-Financial information
-Browsing history outside of supported Canvas pages
-Data Sharing
+For authorized instructors, Wayfinder's Student Radar feature may process Canvas student information to calculate and display course progress.
 
-Wayfinder does not sell, rent, or share user information with third parties.
+This may include:
 
-No advertising or tracking services are used by the extension.
+* Student name
+* Canvas student ID
+* Enrollment information
+* Course activity
+* Assignment completion
+* Submission status
+* Grading status
+* Progress calculations
+* Instructor-defined course end dates
 
-Future Synchronization Features
+Student Radar information is retrieved from Canvas as needed. Wayfinder does not maintain an external database containing this information.
 
-Future versions of Wayfinder may allow instructors to synchronize course configuration settings through a secure Wayfinder service.
+## Local Browser Storage
 
-If implemented, only configuration data necessary for extension functionality—such as instructor-defined required module items—will be transmitted.
+Wayfinder uses Chrome's Extension Storage API (`chrome.storage.local`) to store limited information required for extension functionality.
 
-Student grades, assignment submissions, and other academic records will not be transmitted or stored by Wayfinder unless this Privacy Policy is updated to reflect new functionality.
+Locally stored information may include:
 
-Permissions
+* Interface preferences
+* Selected theme
+* Collapsed/expanded interface state
+* Course-specific settings
+* Required-item selections
+* Canvas course and assignment identifiers used for configuration
+* Student Canvas IDs associated with instructor-defined course end dates
+* Instructor-defined student end dates
 
-Wayfinder requests only the permissions necessary to perform its intended purpose.
+This information is stored within Chrome's extension-specific local storage.
 
-Current permissions include:
+Wayfinder does **not** transmit this locally stored information to a Wayfinder-operated server.
 
-Storage
+Local extension storage should not be considered a secure credential vault. Wayfinder therefore does not intentionally use it to store Canvas passwords, session credentials, or long-lived authentication tokens.
 
-Used to save user preferences and extension settings locally within the browser.
+## Canvas Course Configuration
 
-Host Permission
+Wayfinder may create, read, or update Wayfinder-specific configuration information within an authorized Canvas course.
 
-Access to supported Canvas LMS pages is required to read module information and display course progress.
+Current versions may use a `wayfinder-course.json` configuration file and associated Canvas course resources to store instructor-defined Wayfinder course configuration.
 
-Wayfinder does not access unrelated websites.
+This configuration may contain information such as:
 
-Data Security
+* Canvas course ID
+* Required module-item identifiers
+* Assignment identifiers
+* Module identifiers and names
+* Required-item names and types
+* Wayfinder course settings
+* Configuration timestamps
 
-Wayfinder is designed to minimize data collection.
+This information is stored within the institution's Canvas environment and remains subject to the institution's Canvas access controls and policies.
 
-Whenever possible, information is stored locally within the user's browser rather than on external servers.
+Wayfinder does not use this configuration file to store student grades, assignment submissions, Canvas passwords, or authentication credentials.
 
-Any future online services will use secure communication methods.
+## Authentication and Cookies
 
-Children's Privacy
+Wayfinder does **not create its own authentication cookies**.
 
-Wayfinder is intended for educational use by authorized users of Canvas LMS.
+Wayfinder uses the user's existing authenticated Canvas session when communicating with Canvas.
 
-The extension is not designed to knowingly collect personal information from children.
+For certain authorized Canvas operations, Wayfinder may read Canvas's existing CSRF security token and include it with the corresponding Canvas request.
 
-Changes to This Privacy Policy
+Wayfinder does not intentionally persist the Canvas CSRF token in Chrome extension storage or transmit it to a Wayfinder-operated server.
 
-This Privacy Policy may be updated as Wayfinder evolves.
+Wayfinder does not collect or store Canvas usernames or passwords.
 
-Material changes will be reflected by updating the "Last Updated" date at the top of this document.
+## Information Wayfinder Does Not Sell or Monetize
 
-Contact
+Wayfinder does not sell, rent, or monetize user or student information.
 
-Questions regarding this Privacy Policy may be directed to:
+Wayfinder does not use:
 
-Wayfinder Project
-GitHub Repository:
-https://github.com/Dreadf0x/wayfinder
+* Advertising networks
+* Behavioral advertising
+* Third-party analytics services
+* Cross-site tracking
+* User profiling for advertising
+* Sale of student or instructor information
 
-Open Source
+## External Data Transmission
 
-Wayfinder may be distributed as open-source software.
+Wayfinder's current architecture does not use a Wayfinder-operated cloud service for student analytics or progress processing.
 
-Source code and project information can be found at the official GitHub repository.
+Canvas-related requests are made directly between the user's browser and the authorized Canvas LMS environment.
 
-Wayfinder is an independent project and is not affiliated with, endorsed by, or sponsored by Instructure, Inc. or Canvas LMS. Canvas is a trademark of Instructure, Inc.
+Wayfinder does not intentionally transmit student grades, submissions, student records, Canvas credentials, or authentication tokens to third-party services.
 
-That single sentence helps avoid any confusion about the relationship between your extension and Canvas, and it's a common practice for third-party extensions.
+## Chrome Permissions
 
-I think this policy strikes the right balance: it's clear, accurate, and doesn't overpromise. As you add the backend later, you'll only need to update the "Future Synchronization Features" section to describe exactly what data is synchronized.
+Wayfinder requests Chrome permissions necessary for its functionality.
+
+### Storage
+
+The `storage` permission allows Wayfinder to save application preferences and limited course-specific configuration locally.
+
+### Canvas Host Access
+
+Wayfinder requires access to supported Canvas LMS pages so that it can retrieve authorized course information, calculate progress, display its interface, and perform instructor-authorized Wayfinder configuration operations.
+
+Wayfinder is not designed to monitor general browsing activity outside supported Canvas environments.
+
+## Data Retention and Removal
+
+Information stored in Chrome extension storage remains locally available until it is removed by Wayfinder, cleared from Chrome, or the extension/application data is removed.
+
+Wayfinder-specific information stored within Canvas remains subject to Canvas course access, retention, and institutional policies.
+
+Removing the Wayfinder extension does not necessarily remove Wayfinder configuration resources previously created within Canvas.
+
+## Data Security
+
+Wayfinder is designed to minimize unnecessary data collection and storage.
+
+Security measures and design choices include:
+
+* Local-first application architecture
+* No external Wayfinder student database
+* No storage of Canvas passwords
+* No intentional persistent storage of Canvas authentication tokens
+* Limited Chrome extension permissions
+* Direct communication with Canvas
+* Use of the user's existing Canvas permissions
+* No third-party advertising or analytics services
+
+No software can guarantee absolute security. Wayfinder has not, as of the date of this policy, undergone formal third-party security certification or penetration testing.
+
+## Educational and Student Data
+
+Wayfinder is intended for use by authorized users of educational institutions using Canvas LMS.
+
+Institutions and users remain responsible for using Wayfinder in accordance with their applicable institutional policies and legal requirements governing student information.
+
+Wayfinder does not independently grant access to student information; access depends upon permissions already granted through Canvas.
+
+## Changes to This Privacy Policy
+
+This Privacy Policy may be updated as Wayfinder's features and architecture evolve.
+
+Material changes will be reflected by updating the **Last Updated** date.
+
+If future versions introduce external cloud storage, analytics, synchronization services, or materially different handling of student information, this policy will be updated accordingly.
+
+## Contact and Project Information
+
+Questions regarding Wayfinder or this Privacy Policy may be directed through the Wayfinder project repository.
+
+**Wayfinder is an independent project and is not affiliated with, endorsed by, or sponsored by Instructure, Inc. Canvas is a trademark of Instructure, Inc.**
+
+© 2026 Heber Hamilton. All rights reserved.

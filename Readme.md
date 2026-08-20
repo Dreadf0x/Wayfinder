@@ -1,210 +1,94 @@
-Current Status
+# About Wayfinder
 
-Version: Pre-1.0
+## Find Your Way Through Canvas
 
-Currently in UI Polish Sprint.
+**Wayfinder** is a Chrome extension designed to make Canvas course progress easier to understand for both students and instructors.
 
+Instead of making students determine their progress by searching through assignments, grades, and modules, Wayfinder brings important course-progress information together directly inside Canvas.
 
+### For Students
 
-# Canvas Progress Tracker
+Wayfinder provides an easy-to-understand view of course progress, including:
 
-A modern Chrome extension that enhances Canvas LMS by providing visual progress tracking for required module items, instructor-configurable completion rules, and a streamlined progress dashboard.
+* Visual progress by module
+* Overall course progress
+* Required coursework
+* Completed and remaining items
+* Submitted work waiting to be graded
+* Grade-aware completion status
+* Personalized course scheduling
+* Printable weekly completion plans
+* Multiple interface themes
 
-> Current Status: **v0.1.0-alpha**
+Course schedules can use a student's expected completion date to divide remaining coursework into manageable weekly goals.
 
----
+### For Instructors
 
-# Features
+Wayfinder adds **Student Radar**, giving instructors a quick view of student progress without replacing Canvas.
 
-## Student Features
+Student Radar can help instructors identify:
 
-- Visual progress tracking by module
-- Overall required course progress
-- Automatic assignment grade analysis
-- Missing assignment detection
-- Waiting-for-grade status
-- Collapsible interface
-- Lightweight, fast loading
+* Students who are on track
+* Students who may need attention
+* Students who may be at risk
+* Inactive students
+* Unsubmitted required work
+* Work awaiting grading
+* Students approaching their expected course end date
 
-## Instructor Features
+Instructors can also customize which course items Wayfinder considers required.
 
-- Automatic instructor detection
-- Custom required-item selection per module
-- Keyword-based completion rules
-- Instructor configuration panel
-- Real-time progress recalculation
+### Built for Canvas
 
----
+Wayfinder works directly with the existing Canvas LMS.
 
-# Screenshots
+It uses the Canvas account and permissions of the person currently signed in. Wayfinder does not create a separate student account or require students and instructors to maintain another username or password.
 
-*Screenshots coming soon.*
+Instructor-only features rely on the permissions already provided by Canvas.
 
----
+### Privacy by Design
 
-# Installation
+Wayfinder uses a **local-first architecture**.
 
-## Option 1 – Development
+* No external Wayfinder student database
+* No advertising
+* No third-party analytics or tracking
+* No sale of user or student information
+* No storage of Canvas passwords
+* No stored Canvas API access tokens
+* No Wayfinder authentication cookies
+* Limited information stored locally through Chrome
+* Canvas information retrieved directly from Canvas
 
-Clone the repository:
+Some course configuration may also be stored directly within the authorized Canvas course so that Wayfinder can provide consistent course behavior.
 
-```bash
-git clone https://github.com/<YOUR USERNAME>/Canvas_Progress_Bar.git
-```
+### Local Information
 
-Install dependencies:
+Wayfinder uses Chrome's extension-specific local storage for limited application information such as interface preferences, course settings, required-item selections, and instructor-defined student end dates.
 
-```bash
-npm install
-```
+Student end dates are associated with Canvas student IDs rather than names.
 
-Build the extension:
+Wayfinder does not maintain an external database containing this information.
 
-```bash
-node build.js
-```
+### Security
 
-Load the generated **dist** folder in Chrome.
+Wayfinder is built using **Chrome Manifest V3** and follows a minimal-permissions approach.
 
-```
-chrome://extensions
-```
+The extension communicates directly with the institution's Canvas environment using the user's existing authenticated Canvas session.
 
-Enable **Developer Mode**
+Wayfinder is designed to avoid unnecessary collection, transmission, and storage of student information.
 
-Select:
+Wayfinder has not undergone formal third-party security certification or penetration testing.
 
-```
-Load unpacked
-```
+### Independent Project
 
-Choose:
+Wayfinder is an independent project designed to improve the Canvas learning experience.
 
-```
-dist/
-```
+Wayfinder is **not affiliated with, endorsed by, or sponsored by Instructure, Inc.**
 
----
+Canvas is a trademark of Instructure, Inc.
 
-## Option 2 – Release ZIP
+**Wayfinder**
+*Course Progress Tracker*
 
-Every build automatically generates:
-
-```
-release/
-    Canvas_Progress_Bar.zip
-```
-
-Extract the ZIP.
-
-Load the extracted folder using **Load unpacked**.
-
----
-
-# Project Structure
-
-```
-src/
-│
-├── api/
-│   ├── canvas.js
-│   └── roles.js
-│
-├── progress/
-│   └── engine.js
-│
-├── storage/
-│   └── rules.js
-│
-├── ui/
-│   ├── panel.js
-│   ├── settings.js
-│   └── shell.js
-│
-└── content/
-```
-
----
-
-# Architecture
-
-The extension follows a modular architecture.
-
-### API
-
-Responsible for all Canvas API communication.
-
-### Progress Engine
-
-Calculates assignment completion and required module progress.
-
-### Storage
-
-Stores instructor rules and UI state.
-
-### UI
-
-Responsible for rendering the interface.
-
-### Application
-
-Coordinates all modules and application state.
-
----
-
-# Building
-
-```
-node build.js
-```
-
-The build process automatically:
-
-- Cleans previous builds
-- Bundles JavaScript
-- Copies required assets
-- Generates the production `dist` folder
-- Creates a ready-to-install release ZIP
-
----
-
-# Roadmap
-
-## v0.2
-
-- Student history
-- Instructor analytics
-- Better error reporting
-- Additional accessibility improvements
-
-## v0.3
-
-- Export reports
-- Additional Canvas integrations
-- Enhanced customization
-
----
-
-# Development Status
-
-Current Version
-
-**v0.1.0-alpha**
-
-This project is under active development.
-
-Features and interfaces may change before the first stable release.
-
----
-
-# Copyright
-
-© 2026 Heber Hamilton
-
-This software is currently provided for evaluation and internal development purposes.
-
-No open-source license has been assigned at this time.
-
-All rights reserved.
-
-Licensing may be established in a future release.
+© 2026 Heber Hamilton. All rights reserved.

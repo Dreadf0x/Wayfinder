@@ -432,31 +432,68 @@ export function initializeApp() {
               Number(configItem.moduleId)
             ] || [];
 
-          const configuredId =
+          
+            Number(configItem.assignmentId);
+
+          const configuredModuleItemId =
+            Number(configItem.moduleItemId);
+
+          const configuredAssignmentId =
             Number(configItem.assignmentId);
 
           const configuredName =
             cleanText(configItem.name)
               .toLowerCase();
 
+          /*
+          * New configs identify the exact selected Canvas
+          * module item using moduleItemId.
+          *
+          * Older configs may not contain moduleItemId, so
+          * assignmentId/title remain as compatibility fallbacks.
+          */
           const matchedItem =
             moduleItems.find((moduleItem) => {
+              /*
+              * Preferred match for current Wayfinder configs.
+              */
+              if (
+                Number.isFinite(
+                  configuredModuleItemId
+                ) &&
+                Number(moduleItem.id) ===
+                  configuredModuleItemId
+              ) {
+                return true;
+              }
+
+              /*
+              * Legacy assignment-ID fallback.
+              */
               const directAssignmentId =
                 getAssignmentIdFromModuleItem(
                   moduleItem
                 );
 
-              return (
-                Number(moduleItem.id) ===
-                  configuredId ||
+              if (
+                Number.isFinite(
+                  configuredAssignmentId
+                ) &&
                 Number(directAssignmentId) ===
-                  configuredId ||
-                (
-                  configuredName &&
-                  cleanText(moduleItem.title)
-                    .toLowerCase() ===
-                    configuredName
-                )
+                  configuredAssignmentId
+              ) {
+                return true;
+              }
+
+              /*
+              * Final compatibility fallback for older
+              * or unusual Canvas course structures.
+              */
+              return (
+                configuredName &&
+                cleanText(moduleItem.title)
+                  .toLowerCase() ===
+                  configuredName
               );
             });
 
@@ -474,27 +511,28 @@ export function initializeApp() {
               matchedItem
             );
 
-          if (!resolvedAssignmentId) {
-            console.warn(
-              "Wayfinder matched a module item but could not resolve its assignment ID:",
-              matchedItem
-            );
-            return null;
-          }
-
           /*
-           * Cache the resolved assignment ID on the module item.
-           * engine.js checks assignment_id first, so Classic
-           * Quizzes now participate in the normal progress logic.
-           */
-          matchedItem.assignment_id =
-            Number(resolvedAssignmentId);
+          * A selected module item does not have to be backed
+          * by a Canvas assignment.
+          *
+          * If an assignment can be resolved, cache it so
+          * Wayfinder can use grades/submissions normally.
+          *
+          * If not, keep the selected module item anyway.
+          * engine.js will treat it as informational content.
+          */
+          if (resolvedAssignmentId) {
+            matchedItem.assignment_id =
+              Number(resolvedAssignmentId);
+          }
 
           return {
             configItem,
             moduleItem: matchedItem,
             assignmentId:
-              Number(resolvedAssignmentId)
+              resolvedAssignmentId
+                ? Number(resolvedAssignmentId)
+                : null
           };
         }
       )
@@ -583,9 +621,15 @@ export function initializeApp() {
 
       assignmentIds = Array.from(
         new Set(
-          resolvedItems.map(
-            (item) => item.assignmentId
-          )
+          resolvedItems
+            .map(
+              (item) => Number(item.assignmentId)
+            )
+            .filter(
+              (id) =>
+                Number.isFinite(id) &&
+                id > 0
+            )
         )
       );
 

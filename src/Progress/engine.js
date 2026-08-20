@@ -58,28 +58,67 @@ export function getRequiredItemsForModule(
    * when it exists.
    */
   if (Array.isArray(courseConfig?.requiredItems)) {
-    const selectedAssignmentIds = new Set(
-      courseConfig.requiredItems
-        .filter(
-          (configItem) =>
-            Number(configItem.moduleId) === Number(module.id)
+    const configuredItems =
+      courseConfig.requiredItems.filter(
+        (configItem) =>
+          Number(configItem.moduleId) ===
+          Number(module.id)
+      );
+
+    const selectedModuleItemIds = new Set(
+      configuredItems
+        .map((configItem) =>
+          String(configItem.moduleItemId || "")
         )
-        .map((configItem) => Number(configItem.assignmentId))
+        .filter(Boolean)
+    );
+
+    /*
+    * New Wayfinder configs identify the exact
+    * Canvas module item using moduleItemId.
+    */
+    if (selectedModuleItemIds.size > 0) {
+      return moduleItems.filter(
+        (moduleItem) =>
+          selectedModuleItemIds.has(
+            String(moduleItem.id)
+          )
+      );
+    }
+
+    /*
+    * Backward compatibility for older configs that
+    * only contain assignmentId.
+    */
+    const selectedAssignmentIds = new Set(
+      configuredItems
+        .map((configItem) =>
+          Number(configItem.assignmentId)
+        )
         .filter(Number.isFinite)
     );
 
     return moduleItems.filter((moduleItem) => {
-      const assignmentId = getAssignmentIdFromModuleItem(moduleItem);
-      const contentId = Number(moduleItem.content_id);
+      const assignmentId =
+        getAssignmentIdFromModuleItem(
+          moduleItem
+        );
+
+      const contentId =
+        Number(moduleItem.content_id);
 
       return (
         (
           assignmentId !== null &&
-          selectedAssignmentIds.has(Number(assignmentId))
+          selectedAssignmentIds.has(
+            Number(assignmentId)
+          )
         ) ||
         (
           Number.isFinite(contentId) &&
-          selectedAssignmentIds.has(contentId)
+          selectedAssignmentIds.has(
+            contentId
+          )
         )
       );
     });
