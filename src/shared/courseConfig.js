@@ -5,16 +5,37 @@ export const WAYFINDER_CONFIG_FILE_NAME =
 
 function normalizeRequiredItem(item) {
   return {
-    assignmentId: String(
-      item.assignmentId ??
-      item.id ??
-      ""
-    ),
+    /*
+     * The Canvas module-item ID identifies exactly
+     * which item the instructor selected.
+     */
+    moduleItemId:
+      item.moduleItemId === null ||
+      item.moduleItemId === undefined
+        ? null
+        : String(item.moduleItemId),
+
+    /*
+     * The Canvas assignment ID is optional.
+     * It is used for grades/submissions when the
+     * selected module item has an assignment backing it.
+     */
+    assignmentId:
+      item.assignmentId === null ||
+      item.assignmentId === undefined
+        ? null
+        : String(item.assignmentId),
 
     name: String(
       item.name ??
-      "Unnamed Assignment"
+      "Unnamed Item"
     ),
+
+    type:
+      item.type === null ||
+      item.type === undefined
+        ? null
+        : String(item.type),
 
     moduleId:
       item.moduleId === null ||

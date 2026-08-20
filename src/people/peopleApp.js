@@ -457,11 +457,32 @@ function bindRequiredItemsPanel({
       new Set(checkedIds);
 
     const selectedAssignments =
-      assignments.filter(
-        (assignment) =>
+      assignments.filter((assignment) => {
+        return (
           checkedIdSet.has(
             String(assignment.id)
+          ) ||
+          (
+            assignment.assignmentId &&
+            checkedIdSet.has(
+              String(assignment.assignmentId)
+            )
           )
+        );
+  });
+
+    const selectedCanvasAssignmentIds =
+      selectedAssignments
+        .map(
+          (assignment) =>
+            assignment.assignmentId
+        )
+        .filter(Boolean);
+
+    const radarSubmissions =
+      await getRadarSubmissions(
+        courseId,
+        selectedCanvasAssignmentIds
       );
 
     const uiState =
@@ -895,10 +916,24 @@ export async function initializePeopleView() {
         selectedIdSet.has(String(assignment.id))
       );
 
+    /*
+    * The People picker uses module-item IDs such as:
+    * module:33016661
+    *
+    * Canvas submission APIs require the real numeric
+    * assignment IDs instead.
+    */
+    const selectedCanvasAssignmentIds =
+      selectedAssignments
+        .map((assignment) =>
+          assignment.assignmentId
+        )
+        .filter(Boolean);
+
     const radarSubmissions =
       await getRadarSubmissions(
         courseId,
-        selectedAssignmentIds
+        selectedCanvasAssignmentIds
       );
 
     const submissionsByStudentId = new Map();
@@ -955,9 +990,11 @@ export async function initializePeopleView() {
           const assignment of selectedAssignments
         ) {
           const submission =
-            submissionsByAssignmentId.get(
-              String(assignment.id)
-            );
+            assignment.assignmentId
+              ? submissionsByAssignmentId.get(
+                  String(assignment.assignmentId)
+                )
+              : null;
 
           const hasBeenSubmitted = Boolean(
             submission?.submitted_at
