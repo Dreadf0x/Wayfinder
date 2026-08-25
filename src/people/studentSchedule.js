@@ -1,3 +1,34 @@
+/*
+ * Wayfinder - studentSchedule.js
+ *
+ * Purpose:
+ * Generates and displays the Student Radar Weekly Success Plan used to
+ * help instructors schedule a student's remaining required work between
+ * the current date and that student's configured End Date.
+ *
+ * The scheduler works only with required items that have not yet been
+ * submitted. Submitted-but-ungraded work is intentionally excluded.
+ *
+ * Module names are inspected for workload values such as "(10H)",
+ * "15 Hours", or "8 hrs". When module-hour information is available,
+ * it is divided across that module's required items and used as an
+ * internal scheduling weight.
+ *
+ * The file creates calendar weeks from today through the End Date and
+ * uses weighted partitioning to distribute the ordered remaining work
+ * as evenly as possible while preserving assignment/module order.
+ *
+ * It renders the Weekly Success Plan in a modal dialog, groups scheduled
+ * items by module, supports printing, handles missing or invalid End
+ * Dates, and can return focus to the student's End Date input.
+ *
+ * openSuccessPlan() exposes the schedule generator for a supplied person
+ * and missing-item list, while bindStudentScheduleButtons() connects the
+ * schedule buttons in Student Radar to the appropriate student data.
+ */
+
+
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")

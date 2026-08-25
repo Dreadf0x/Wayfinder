@@ -1,3 +1,25 @@
+/*
+ * Wayfinder - requiredItemsPanel.js
+ *
+ * Purpose:
+ * Renders the instructor-facing Required Items selection panel used
+ * by Student Radar.
+ *
+ * The component receives the list of selectable Canvas items and the
+ * IDs that are currently selected, then builds a checkbox row for each
+ * item and marks saved selections as checked.
+ *
+ * The panel also renders controls for Save, Reset to Defaults, Export,
+ * Import, and Close.
+ *
+ * This file only generates the Required Items panel HTML. Saving,
+ * resetting, importing, exporting, publishing the shared course
+ * configuration, and refreshing Student Radar are handled by
+ * peopleApp.js and related modules.
+ */
+
+
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")

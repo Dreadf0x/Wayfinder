@@ -1,3 +1,36 @@
+/*
+ * Wayfinder - loadCourseConfig.js
+ *
+ * Purpose:
+ * Locates, downloads, validates, and loads the shared Wayfinder course
+ * configuration from Canvas Modules.
+ *
+ * The loader searches for a Canvas module named
+ * "Wayfinder Configuration" and a File module item titled
+ * "Wayfinder Course Data".
+ *
+ * If the dedicated configuration module cannot be found, the loader
+ * searches the other Canvas modules for a matching file item as a
+ * fallback.
+ *
+ * Once the module item is found, this file retrieves the corresponding
+ * Canvas File metadata, downloads the file using the user's existing
+ * Canvas session, parses its contents as JSON, and validates that the
+ * configuration belongs to the current course and uses a supported
+ * schema version.
+ *
+ * The current validation logic also requires each Required Item to
+ * contain assignmentId and moduleId.
+ *
+ * If no shared configuration exists, loadCourseConfig() returns null so
+ * Wayfinder can continue using its existing local/default required-item
+ * behavior.
+ *
+ * Invalid files, mismatched course IDs, unsupported schema versions,
+ * missing required fields, failed downloads, or invalid JSON generate
+ * explicit errors rather than silently loading bad configuration data.
+ */
+
 import {
   canvasFetch
 } from "../api/canvas.js";

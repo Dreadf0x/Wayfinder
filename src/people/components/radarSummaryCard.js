@@ -1,3 +1,24 @@
+/*
+ * Wayfinder - radarSummaryCard.js
+ *
+ * Purpose:
+ * Renders the Student Radar summary cards used to show groups of
+ * students such as On Track, Watch List, At Risk, Inactive, and
+ * End Date Alert.
+ *
+ * Each card displays the number of students in the supplied group and
+ * includes a tooltip containing student names and optional status detail.
+ *
+ * Tooltip lists display up to 10 students. If additional students are
+ * present, the component displays a "+N more" indicator.
+ *
+ * The generated cards are keyboard focusable and include accessible
+ * labels describing the category and student count.
+ *
+ * This component only renders summary-card HTML. The logic that decides
+ * which students belong in each category is handled elsewhere.
+ */
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")

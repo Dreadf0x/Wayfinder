@@ -1,8 +1,27 @@
-/* ===========================
-   Wayfinder Student Radar
-=========================== */
-
-
+/*
+ * Wayfinder - radar.css
+ *
+ * Purpose:
+ * Defines the complete visual presentation for the instructor-facing
+ * Student Radar interface on the Canvas People page.
+ *
+ * This stylesheet controls the Student Radar table, column sizing,
+ * activity badges, End Date inputs, Submitted and Graded progress bars,
+ * Required Items popup, student filters, summary cards, tooltip content,
+ * and the body-level tooltip portal used to avoid Canvas clipping.
+ *
+ * It also styles the Student Radar heading and controls, collapsed Radar
+ * tab, schedule buttons, weekly Success Plan modal, printable schedule,
+ * and print-specific presentation.
+ *
+ * Responsive rules adapt the Student Radar interface for narrower
+ * screens, while focus states and tooltip styles support keyboard and
+ * accessibility behavior.
+ *
+ * This file contains presentation rules only. Student calculations,
+ * API access, storage, scheduling logic, and event behavior are handled
+ * by the related Student Radar JavaScript files.
+ */
 
 .cpt-student-radar {
   background: var(--cpt-bg);

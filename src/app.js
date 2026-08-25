@@ -1,3 +1,68 @@
+/*
+ * Wayfinder - app.js
+ *
+ * Purpose:
+ * Serves as the main application coordinator and routing entry point
+ * for Wayfinder.
+ *
+ * initializeApp() first determines which supported Canvas page is open.
+ * If the current page is the Canvas People page, control is handed to
+ * initializePeopleView() and the Student Radar application.
+ *
+ * Otherwise, this file initializes the Wayfinder Modules-page progress
+ * tracker and coordinates its major systems.
+ *
+ * Modules-page responsibilities in this file include:
+ *
+ * - Determining the current Canvas course ID from the URL
+ * - Loading and saving course-specific Wayfinder UI state
+ * - Applying the selected Wayfinder theme
+ * - Creating, collapsing, reopening, refreshing, and rerendering the
+ *   Modules-page tracker shell
+ * - Loading Canvas user, module, module-item, assignment, and
+ *   submission data
+ * - Loading the published shared Wayfinder course configuration
+ * - Loading only the Canvas modules needed by that configuration
+ * - Matching configured Required Items to exact Canvas module items
+ * - Resolving module items to backing Canvas assignment IDs when possible
+ * - Supporting Classic Quiz assignment resolution
+ * - Verifying ordinary assignment IDs against the Canvas API
+ * - Falling back to exact assignment-title matching for migrated,
+ *   LTI, or otherwise unusual Canvas module items
+ * - Preserving configured items that do not resolve to a backing
+ *   assignment so they can remain informational items
+ * - Normalizing the loaded course configuration before it is passed
+ *   to the progress engine
+ * - Falling back to keyword-based Required Item discovery when no
+ *   published Wayfinder configuration exists
+ * - Loading the current student's assignment and submission data
+ * - Calling engine.js to analyze module progress
+ * - Passing analyzed data to panel.js for rendering
+ * - Managing the Modules-page Success Plan End Date
+ * - Building the current student's missing-item list and opening the
+ *   Weekly Success Plan scheduler
+ * - Binding theme, schedule, Collapse, and Refresh controls
+ *
+ * The file also contains a local required-item renderer and status
+ * mapping used by the Modules-page tracker.
+ *
+ * Important:
+ * The current Modules-page implementation is explicitly rendered as
+ * the student experience. renderTracker() is called with
+ * isInstructor: false, and the data returned by getCanvasData()
+ * currently reports role: "student".
+ *
+ * Instructor-facing Student Radar behavior is handled separately by
+ * the People-page application in peopleApp.js.
+ *
+ * Because this file coordinates API access, configuration resolution,
+ * progress analysis, storage, scheduling, themes, and UI rendering,
+ * changes here can affect several major Wayfinder systems at once and
+ * should be tested on both Modules and People pages.
+ */
+
+
+
 import { initializePeopleView } from "./people/peopleApp.js";
 import {
   createShell as createShellUi,

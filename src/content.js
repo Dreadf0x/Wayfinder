@@ -1,3 +1,42 @@
+/*
+ * Wayfinder - content.js
+ *
+ * Purpose:
+ * Contains an older DOM-based implementation of the Wayfinder
+ * Canvas Modules progress tracker.
+ *
+ * Unlike the current modular application, this implementation reads
+ * course information directly from the rendered Canvas Modules page
+ * instead of using Wayfinder's newer API-driven progress architecture.
+ *
+ * This file:
+ *
+ * - Locates Canvas modules and module items in the page DOM
+ * - Extracts module and item titles from Canvas HTML
+ * - Detects and excludes Canvas text-header items
+ * - Uses the keywords Training, Lab, Important, and Assessment to
+ *   determine which module items should be considered required
+ * - Estimates item completion by searching visible text, CSS classes,
+ *   ARIA labels, and HTML for completion/incompletion signals
+ * - Calculates module and overall required-item completion percentages
+ * - Creates its own standalone Module Progress interface
+ * - Provides a Refresh button that rescans the Canvas page
+ * - Displays a warning when no Canvas modules can be detected
+ *
+ * The tracker initializes after a 1.2-second delay to allow the Canvas
+ * Modules page to render before the DOM is scanned.
+ *
+ * This file represents the earlier keyword/DOM-based Wayfinder
+ * implementation. The current modular application is started from
+ * src/content/content.js through initializeApp() in app.js.
+ */
+
+
+
+
+
+
+
 (function () {
   "use strict";
 

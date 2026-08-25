@@ -1,3 +1,39 @@
+/*
+ * Wayfinder - shell.js
+ *
+ * Purpose:
+ * Creates and manages the basic outer shell for the Wayfinder
+ * Modules-page interface before the full tracker is rendered.
+ *
+ * This file is responsible for four primary UI states/functions:
+ *
+ * removeExistingUI()
+ * Removes any existing Wayfinder tracker and collapsed Progress tab
+ * from the page to prevent duplicate interfaces.
+ *
+ * createShell()
+ * Creates the main Wayfinder <aside> container and displays the
+ * initial "Loading Canvas progress..." interface while course data
+ * is being retrieved. It also creates the Collapse and Refresh
+ * controls and binds their header-button behavior.
+ *
+ * createCollapsedTab()
+ * Creates the small "Progress" button shown when the main Wayfinder
+ * panel is collapsed. Clicking the tab calls the supplied onOpen
+ * handler to reopen Wayfinder.
+ *
+ * renderError()
+ * Replaces the normal tracker content with an error message when
+ * Canvas API data cannot be loaded. The error message is escaped
+ * before being inserted into the page, and Collapse and Refresh
+ * controls remain available.
+ *
+ * This file manages the Wayfinder container, loading state, collapsed
+ * state, and error presentation. The completed progress interface is
+ * rendered separately by panel.js.
+ */
+
+
 export function removeExistingUI(extensionId, tabId) {
   document.getElementById(extensionId)?.remove();
   document.getElementById(tabId)?.remove();

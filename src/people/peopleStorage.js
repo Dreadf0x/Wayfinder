@@ -1,3 +1,30 @@
+/*
+ * Wayfinder - peopleStorage.js
+ *
+ * Purpose:
+ * Provides Chrome local-storage helpers for Student Radar state that
+ * should persist between browser sessions.
+ *
+ * Data is stored in chrome.storage.local using keys that include the
+ * Canvas course ID so information from different courses remains
+ * separate.
+ *
+ * This file stores and retrieves:
+ *
+ * - Per-student End Dates
+ * - Instructor-selected Required Item IDs
+ * - Student Radar collapsed/expanded UI state
+ *
+ * A null Required Items result specifically means the instructor has
+ * never saved a custom selection for that course, allowing peopleApp.js
+ * to apply its default selection behavior.
+ *
+ * Required-item IDs are deduplicated before storage.
+ *
+ * This file stores Wayfinder application state only. It does not store
+ * Canvas usernames, passwords, or Canvas session cookies.
+ */
+
 function getEndDateKey(courseId) {
   return `wayfinder_student_radar_end_dates_${courseId}`;
 }

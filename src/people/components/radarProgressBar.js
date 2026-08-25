@@ -1,3 +1,27 @@
+/*
+ * Wayfinder - radarProgressBar.js
+ *
+ * Purpose:
+ * Renders the Submitted and Graded progress bars used in Student Radar.
+ *
+ * The exported renderRadarProgressBar() function receives a percentage,
+ * tooltip title, and related required-item list and returns the HTML for
+ * an accessible progress bar.
+ *
+ * When incomplete items are supplied, their names are included in a
+ * hidden tooltip that can be displayed by the Student Radar tooltip
+ * system. When no incomplete items remain, the tooltip displays a
+ * completion message instead.
+ *
+ * The function clamps displayed percentages between 0 and 100 and
+ * includes ARIA progress-bar values and accessible labels.
+ *
+ * If no percentage is available, the component renders an em dash
+ * instead of a progress bar.
+ */
+
+
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")

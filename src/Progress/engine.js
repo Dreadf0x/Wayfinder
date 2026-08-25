@@ -1,3 +1,50 @@
+/*
+ * Wayfinder - engine.js
+ *
+ * Purpose:
+ * Provides the core Modules-page progress analysis used by Wayfinder.
+ *
+ * This file is responsible for determining which Canvas module items
+ * should be treated as required, resolving assignment IDs when possible,
+ * analyzing assignment/submission status, and calculating module-level
+ * completion percentages.
+ *
+ * Required-item selection follows this priority:
+ *
+ * 1. Published wayfinder-course.json configuration
+ * 2. Locally saved custom instructor rules
+ * 3. Keyword-based detection as a final fallback
+ *
+ * New published configurations identify selected items by moduleItemId.
+ * Older configurations that only contain assignmentId are still
+ * supported through a backward-compatibility fallback.
+ *
+ * The file also identifies Canvas text-header items so they can be
+ * excluded from keyword-based required-item detection.
+ *
+ * analyzeItem() converts Canvas assignment and submission data into
+ * Wayfinder statuses including:
+ *
+ * - Passed
+ * - Below passing
+ * - Waiting for grade
+ * - Missing
+ * - Error
+ * - Informational/non-assignment item
+ * - Graded item without usable points-possible data
+ *
+ * Items without a backing assignment can still be displayed as
+ * informational items but are excluded from graded progress totals.
+ *
+ * analyzeModules() deduplicates required items that resolve to the same
+ * Canvas assignment, analyzes each item, and calculates the completed,
+ * total, and percentage values displayed for each Canvas module.
+ *
+ * Changes to this file directly affect which coursework Wayfinder
+ * considers required and how student progress is calculated.
+ */
+
+
 function cleanText(value) {
   return String(value || "")
     .replace(/\s+/g, " ")

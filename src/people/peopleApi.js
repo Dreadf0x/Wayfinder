@@ -1,3 +1,35 @@
+/*
+ * Wayfinder - peopleApi.js
+ *
+ * Purpose:
+ * Provides Canvas API access and Canvas-item resolution specifically
+ * for the instructor-facing Student Radar on the People page.
+ *
+ * This file can retrieve:
+ *
+ * - Course students and their enrollments
+ * - Course modules and module items
+ * - Canvas assignments
+ * - Student submissions for selected assignments
+ *
+ * getRadarAssignments() builds the selectable Required Items list from
+ * published Canvas modules and published module items. It excludes text
+ * headers and ordinary External URL items, but allows other Canvas item
+ * types such as assignments and ExternalTool/LTI content.
+ *
+ * When possible, module items are matched to their backing Canvas
+ * assignment using assignment_id, content_id, or an exact normalized
+ * title match. The returned object keeps moduleItemId as the exact
+ * module-item identity and assignmentId as optional grading metadata.
+ *
+ * Submission loading prefers Canvas's bulk student-submissions endpoint
+ * and includes an assignment-by-assignment fallback when Canvas rejects
+ * the bulk request with a permission-related 403 response.
+ *
+ * The file also creates detailed Canvas API errors so failures are not
+ * silently mistaken for missing student work.
+ */
+
 function createCanvasApiError({
   status,
   path,

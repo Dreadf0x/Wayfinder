@@ -1,3 +1,36 @@
+/*
+ * Wayfinder - settings.js
+ *
+ * Purpose:
+ * Renders the legacy Modules-page instructor Requirements panel used
+ * to define custom required items for an individual Canvas module.
+ *
+ * The panel locates the requested module and its Canvas module items,
+ * then determines which items should initially be selected.
+ *
+ * If the module has a saved custom rule, the saved requiredItemIds
+ * are used. Otherwise, Wayfinder applies its keyword-based required
+ * item detection to create the initial selection.
+ *
+ * The panel:
+ *
+ * - Displays every module item available to the legacy rule editor
+ * - Creates a checkbox for selectable items
+ * - Prevents Canvas text-header items from being selected
+ * - Labels text headers as "Text Header - ignored"
+ * - Provides a Save Custom Rules button
+ * - Provides a Use Keyword Rules reset button
+ * - Provides a Close button for the Requirements panel
+ *
+ * This file only generates the Requirements panel HTML. The functions
+ * used to identify text headers, detect keyword matches, save/reset
+ * rules, and bind the controls are supplied or handled elsewhere.
+ *
+ * This is separate from the newer People-page Required Items system
+ * used by Student Radar and the published Wayfinder course
+ * configuration.
+ */
+
 export function renderSettingsPanel({
   moduleId,
   data,

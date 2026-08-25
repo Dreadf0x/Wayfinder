@@ -1,3 +1,38 @@
+/*
+ * Wayfinder - courseConfig.js
+ *
+ * Purpose:
+ * Defines the structure and creation of Wayfinder's shared
+ * wayfinder-course.json configuration file.
+ *
+ * This file defines the current configuration schema version and the
+ * standard configuration filename.
+ *
+ * Required items are normalized before being written so each item can
+ * contain:
+ *
+ * - moduleItemId: the exact Canvas module-item identity
+ * - assignmentId: the optional backing Canvas assignment used for
+ *   grades and submissions
+ * - name
+ * - type
+ * - moduleId
+ * - moduleName
+ *
+ * createCourseConfig() creates a complete course configuration containing
+ * the Canvas course ID, schema version, update timestamp, normalized
+ * Required Items, passing percentage, and selected Wayfinder theme.
+ *
+ * serializeCourseConfig() converts the configuration object into
+ * formatted JSON.
+ *
+ * downloadCourseConfig() creates a browser download of the generated
+ * JSON file for instructor backup or inspection.
+ *
+ * This file defines the shared configuration data format only. Uploading
+ * the configuration into Canvas is handled by canvasCourseConfig.js.
+ */
+
 export const WAYFINDER_CONFIG_SCHEMA_VERSION = 1;
 
 export const WAYFINDER_CONFIG_FILE_NAME =

@@ -1,3 +1,26 @@
+/*
+ * Wayfinder - canvas.js
+ *
+ * Purpose:
+ * Provides reusable helpers for reading data from the Canvas REST API.
+ *
+ * canvasFetch() performs a single authenticated Canvas API request
+ * and returns the JSON response.
+ *
+ * canvasFetchAll() handles paginated Canvas API endpoints by following
+ * the "next" URL from Canvas Link response headers until all pages
+ * have been retrieved.
+ *
+ * Requests use credentials: "include", which allows the browser to
+ * send the user's existing Canvas session credentials. Wayfinder does
+ * not create or store a separate Canvas login session here.
+ *
+ * API errors are converted into JavaScript errors containing the
+ * Canvas HTTP status, status text, and requested path.
+ */
+
+
+
 // Canvas API helpers will move here during refactor.
 export async function canvasFetch(path) {
   const response = await fetch(path, {

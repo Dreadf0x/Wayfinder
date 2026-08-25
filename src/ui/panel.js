@@ -1,3 +1,35 @@
+/*
+ * Wayfinder - panel.js
+ *
+ * Purpose:
+ * Renders the main Wayfinder progress tracker displayed on the
+ * Canvas Modules page after course progress has been analyzed.
+ *
+ * This file is responsible for:
+ *
+ * - Mapping progress states such as Passed, Below 80%, Waiting,
+ *   Missing, and Info Only to their display icons and CSS classes
+ * - Rendering individual required-item rows and grade percentages
+ * - Rendering expandable module sections with module progress bars
+ * - Displaying the number of required items passed in each module
+ * - Rendering the Wayfinder header, logo, theme menu, Collapse,
+ *   and Refresh controls
+ * - Rendering the student's Success Plan End Date and
+ *   Create Schedule controls
+ * - Displaying overall counts for Completed, Awaiting Grade,
+ *   Missing, and Below 80%
+ * - Displaying the current Canvas course ID and user name
+ *
+ * renderTracker() assembles the complete tracker HTML inside the
+ * supplied Wayfinder wrapper and then calls bindEvents() so the
+ * application's interactive controls can be connected.
+ *
+ * This file primarily handles presentation. Progress calculations,
+ * Canvas API requests, schedule generation, storage, and most event
+ * behavior are handled elsewhere in Wayfinder.
+ */
+
+
 export function getStatusInfo(item) {
   switch (item.status) {
     case "passed":

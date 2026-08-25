@@ -1,3 +1,29 @@
+/*
+ * Wayfinder - studentRadarTable.js
+ *
+ * Purpose:
+ * Renders the main per-student table used by Student Radar.
+ *
+ * The table displays each student's name, schedule button, Submitted
+ * progress, Graded progress, Last Activity status, and editable End Date.
+ *
+ * This file calculates the number of days since each student's most
+ * recent Canvas enrollment activity and converts that value into a
+ * visual activity status:
+ *
+ * - Recent: 0-3 days
+ * - Watch: 4-7 days
+ * - Inactive: 8 or more days or no recorded activity
+ *
+ * Submitted and Graded percentages are rendered using the shared
+ * radarProgressBar component, including tooltips listing outstanding
+ * required items.
+ *
+ * The table also embeds data attributes used later by Student Radar
+ * filtering and schedule behavior.
+ */
+
+
 import { renderRadarProgressBar } from "./radarProgressBar.js";
 
 function escapeHtml(value) {

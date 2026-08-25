@@ -1,3 +1,38 @@
+/*
+ * Wayfinder - themes.js
+ *
+ * Purpose:
+ * Defines the available Wayfinder visual themes and applies the selected
+ * theme to the current Canvas page.
+ *
+ * The THEMES collection currently defines:
+ *
+ * - UBTech
+ * - Slate
+ * - Forest
+ * - Dark
+ * - Midnight
+ * - High Contrast
+ *
+ * Each theme includes a stable theme ID, display name, and the Wayfinder
+ * logo variant that should be used with that theme.
+ *
+ * getTheme() resolves a supplied theme ID or theme object and safely
+ * falls back to the UBTech theme when the requested theme is missing
+ * or invalid.
+ *
+ * applyTheme() writes the selected theme ID to the
+ * data-cpt-theme attribute on the document's root HTML element.
+ *
+ * Wayfinder's CSS uses that data attribute to activate the appropriate
+ * theme-specific colors and presentation rules.
+ *
+ * This file selects and identifies themes; the actual theme styling is
+ * defined in the project's CSS.
+ */
+
+
+
 export const THEMES = {
   ubtech: {
     id: "ubtech",

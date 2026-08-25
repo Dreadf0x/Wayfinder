@@ -1,3 +1,33 @@
+/*
+ * Wayfinder - rules.js
+ *
+ * Purpose:
+ * Provides Chrome local-storage helpers for the Modules-page Wayfinder
+ * instructor rules and user-interface state.
+ *
+ * This file wraps chrome.storage.local in Promise-based storageGet()
+ * and storageSet() helpers.
+ *
+ * Stored information is scoped by Canvas course ID using separate
+ * storage keys for:
+ *
+ * - Required-item/custom module rules
+ * - Wayfinder UI state
+ *
+ * loadRules() and saveRules() manage locally saved instructor rule
+ * configuration for a course.
+ *
+ * loadUiState() and saveUiState() manage course-specific interface
+ * preferences such as collapsed state and other UI settings supplied
+ * by the application.
+ *
+ * If no saved value exists, the load functions return an empty object.
+ *
+ * This file stores Wayfinder application configuration only. It does
+ * not manage Canvas authentication credentials or Canvas API data.
+ */
+
+
 export function storageGet(key) {
   return new Promise((resolve) => {
     chrome.storage.local.get([key], (result) => resolve(result[key]));

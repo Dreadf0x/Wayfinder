@@ -1,3 +1,40 @@
+/*
+ * Wayfinder - peopleApp.js
+ *
+ * Purpose:
+ * Acts as the main controller for the instructor-facing Student Radar
+ * application on the Canvas People page.
+ *
+ * initializePeopleView() coordinates Student Radar startup by loading
+ * the course theme, students, selectable Required Items, saved student
+ * end dates, saved required-item selections, Canvas submissions, and
+ * Radar UI state.
+ *
+ * This file calculates each student's Submitted and Graded percentages
+ * for the instructor-selected Required Items and builds the lists of
+ * missing-submission and ungraded items used by progress-bar tooltips.
+ *
+ * It also builds the Student Radar summary groups, including On Track,
+ * Watch List, At Risk, Inactive, and End Date Alert.
+ *
+ * Instructor interactions handled here include:
+ *
+ * - Opening and saving the Required Items panel
+ * - Saving/resetting required-item selections
+ * - Creating and downloading wayfinder-course.json
+ * - Publishing the same configuration into the Canvas course
+ * - Saving student end dates
+ * - Filtering student rows
+ * - Collapsing/reopening Student Radar
+ * - Changing Wayfinder themes
+ * - Binding weekly student schedule controls
+ * - Initializing Student Radar tooltips
+ *
+ * This file coordinates the other People-page modules rather than
+ * performing all rendering, storage, API, or scheduling work itself.
+ */
+
+
 import {
   getCourseStudents,
   getRadarAssignments,

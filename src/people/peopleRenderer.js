@@ -1,3 +1,34 @@
+/*
+ * Wayfinder - peopleRenderer.js
+ *
+ * Purpose:
+ * Composes the complete Student Radar HTML interface from the smaller
+ * People-page UI components.
+ *
+ * renderStudentRadar() builds the Student Radar heading and toolbar,
+ * including the Required Items button, selected-item count, theme menu,
+ * and collapse control.
+ *
+ * It also renders the five summary-card categories:
+ *
+ * - On Track
+ * - Watch List
+ * - At Risk
+ * - Inactive
+ * - End Date Alert
+ *
+ * The renderer includes instructor filters for hiding students inactive
+ * for 100+ days and students who are fully submitted and graded.
+ *
+ * It delegates the Required Items panel to requiredItemsPanel.js,
+ * summary cards to radarSummaryCard.js, and the main student table to
+ * studentRadarTable.js.
+ *
+ * This file generates markup only; API requests, storage, calculations,
+ * and event binding are handled elsewhere.
+ */
+
+
 import { renderRadarSummaryCard } from "./components/radarSummaryCard.js";
 import { renderStudentRadarTable } from "./components/studentRadarTable.js";
 import { renderRequiredItemsPanel } from "./components/requiredItemsPanel.js";

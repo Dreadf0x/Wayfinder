@@ -1,3 +1,43 @@
+/*
+ * Wayfinder - canvasCourseConfig.js
+ *
+ * Purpose:
+ * Publishes Wayfinder's shared course configuration into Canvas so the
+ * instructor-defined Required Items can be used by other Wayfinder
+ * users in the same course.
+ *
+ * The configuration is serialized as wayfinder-course.json and uploaded
+ * into the Canvas course's "Wayfinder" file folder.
+ *
+ * This file also manages a dedicated published Canvas module named
+ * "Wayfinder Configuration" containing a File module item titled
+ * "Wayfinder Course Data".
+ *
+ * When publishing, the module is created if it does not already exist,
+ * or republished if it exists but is unpublished. The Wayfinder Course
+ * Data module item is similarly created or updated to point to the
+ * newest uploaded configuration file.
+ *
+ * Canvas write requests use the user's existing authenticated Canvas
+ * session and include Canvas's _csrf_token value in the X-CSRF-Token
+ * header when available. The CSRF token is read only for the request
+ * and is not persisted by this module.
+ *
+ * This file also contains helpers for:
+ *
+ * - Canvas pagination
+ * - Configuration JSON Blob creation
+ * - Canvas file-upload negotiation
+ * - Uploading the generated configuration file
+ * - Creating or publishing the configuration module
+ * - Creating or updating the configuration module item
+ * - Reporting detailed Canvas API/upload errors
+ *
+ * publishCourseConfigToCanvas() is the main exported entry point for
+ * publishing the shared configuration.
+ */
+
+
 import {
   serializeCourseConfig,
   WAYFINDER_CONFIG_FILE_NAME

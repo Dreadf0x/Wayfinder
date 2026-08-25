@@ -1,3 +1,30 @@
+/*
+ * Wayfinder - radarTooltips.js
+ *
+ * Purpose:
+ * Implements the shared tooltip behavior for Student Radar progress
+ * bars and summary cards.
+ *
+ * The module detects tooltip-enabled Radar elements and copies their
+ * hidden tooltip content into a single portal element appended directly
+ * to document.body.
+ *
+ * Using a body-level portal prevents Canvas or Wayfinder overflow
+ * containers from clipping the visible tooltip.
+ *
+ * The tooltip system calculates placement above or below the target,
+ * keeps the tooltip within the browser viewport, and positions the
+ * tooltip arrow toward the center of the triggering element.
+ *
+ * Tooltips can be opened through mouse hover or keyboard focus and can
+ * be dismissed through mouse/focus changes or the Escape key.
+ *
+ * Positioning is recalculated during scrolling and window resizing.
+ * initializeRadarTooltips() also cleans up previous event bindings
+ * before attaching a new set of listeners.
+ */
+
+
 const TOOLTIP_TARGET_SELECTOR = [
   ".cpt-radar-progress-wrapper",
   ".cpt-radar-summary-card"
